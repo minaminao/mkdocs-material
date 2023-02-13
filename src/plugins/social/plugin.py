@@ -324,6 +324,10 @@ class SocialPlugin(BasePlugin[SocialPluginConfig]):
         # Ensure forward slashes
         url = url.replace(os.path.sep, "/")
 
+        # TODO: remove magic string
+        if page.is_homepage:
+            url = page.canonical_url + "images/og_image.jpg"
+
         # Return meta tags
         return [
 
