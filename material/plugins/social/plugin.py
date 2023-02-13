@@ -204,7 +204,7 @@ class SocialPlugin(BasePlugin[SocialPluginConfig]):
         )
 
         # Render page title
-        font = self._get_font("Bold", 92)
+        font = self._get_font("Bold", 60)
         image.alpha_composite(
             self._render_text((826, 328), font, title, 3, 30),
             (64, 160)
@@ -213,8 +213,8 @@ class SocialPlugin(BasePlugin[SocialPluginConfig]):
         # Render page description
         font = self._get_font("Regular", 28)
         image.alpha_composite(
-            self._render_text((826, 80), font, description, 2, 14),
-            (64 + 4, 512)
+            self._render_text((826, (28 * 3) + 14 * 2), font, description, 3, 14),
+            (64 + 4, 480)
         )
 
         # Return social card image
@@ -244,9 +244,25 @@ class SocialPlugin(BasePlugin[SocialPluginConfig]):
         # Retrieve y-offset of textbox to correct for spacing
         yoffset = 0
 
+        # A English word is not separated. 
+        # A Japanese word is separated even in the middle.
+        S = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        base_words = []
+        word = ""
+        for c in text:
+            if c in S:
+                word += c
+            else:
+                if word != "":
+                    base_words.append(word)
+                    word = ""
+                base_words.append(c)
+        if word != "":
+            base_words.append(word)
+
         # Create drawing context and split text into lines
-        for word in text.split(" "):
-            combine = " ".join(words + [word])
+        for word in base_words:
+            combine = "".join(words + [word])
             textbox = self._text_bounding_box(combine, font = font)
             yoffset = textbox[1]
             if not words or textbox[2] <= width:
@@ -268,7 +284,7 @@ class SocialPlugin(BasePlugin[SocialPluginConfig]):
 
         # Join words for each line and create image
         lines.append(words)
-        lines = [" ".join(line) for line in lines]
+        lines = ["".join(line) for line in lines]
         image = Image.new(mode = "RGBA", size = size)
 
         # Create drawing context and split text into lines
