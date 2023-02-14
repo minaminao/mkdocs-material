@@ -304,10 +304,10 @@ class SocialPlugin(BasePlugin[SocialPluginConfig]):
         directory = self.config.cards_dir
         file, _ = os.path.splitext(page.file.src_uri)
 
-        # Compute page title
-        title = page.meta.get("title", page.title)
-        if not page.is_homepage:
-            title = f"{title} - {config.site_name}"
+        if page.is_homepage:
+            title = config.site_name
+        else:
+            title = f"{page.meta.get('title', page.title)} - {config.site_name}"
 
         # Compute page description
         description = config.site_description
